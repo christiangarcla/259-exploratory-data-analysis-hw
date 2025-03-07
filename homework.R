@@ -43,9 +43,9 @@ cities <- c("Charlotte", "Los Angeles", "Houston", "Indianapolis", "Jacksonville
 KCLT <- read_csv("us-weather-history/KCLT.csv")
 
 #attempt 1
-read_weather <- function(data, name) {
+read_weather <- function(data) {
   df <- read_csv(str_glue("us-weather-history/{data}.csv"))
-  df <- df %>% mutate(station = name)
+  df <- df %>% mutate(station = data)
   df$date <- as.Date(df$date, format = "%Y-%m-%d")
   return(df)
 }
@@ -62,20 +62,20 @@ glimpse(KCQT)
 #> Note that because map_dfr() has been superseded, and map() does not automatically bind rows, you will need to do so in the code.
 #> Save the resulting dataset to "ds"
 
-ds <- map()
+ds <- map(stations,read_weather) %>% 
+  bind_rows()
 
 # QUESTION 3
 #> Make a factor called "city" based on the station variable
 #> (station should be the level and city should be the label)
 #> Use fct_count to check that there are 365 days of data for each city 
 
-ds <- ds %>% mutate(city =factor(station, levels = stattion, labels = cities))
+ds <- ds %>% mutate(city =factor(station, levels = station, labels = cities))
 
 # QUESTION 4
 #> Since we're scientists, let's convert all the temperatures to C
 #> Write a function to convert F to C, and then use mutate across to 
 #> convert all of the temperatures, rounded to a tenth of a degree
-
 
 
 ### CHECK YOUR WORK
@@ -93,7 +93,6 @@ ds2 <- read_csv("data-clean/compiled_data.csv")
 #> and sort in descending order to show which city had the most:
 #> (Seattle, 20, Charlotte 12, Phoenix 12, etc...)
 #> Don't save this summary over the original dataset!
-
 
 #attempt 1 ignore lol
 #count_ex_temp <- . %>% 
@@ -145,8 +144,17 @@ ds2 <- ds2 %>% mutate(month = month(date, label = TRUE))
 #> Use a for loop, and print the month along with the resulting correlation
 #> Look at the documentation for the ?cor function if you've never used it before
 
-#try before 5
+ds2 %>% select(city, actual_precipitation:average_precipitation) %>% plot_correlation()
 
+ds2 %>% select(city, actual_min_temp, average_min_temp) %>% plot_correlation()
+
+ds2 %>% select(city, actual_max_temp, average_max_temp) %>% plot_correlation()
+
+cor_output <- vector()
+for (p in preds) {
+  cor_output[p] <- cor(mtcars['mpg'], mtcars[p])
+}
+cor_output
 
 # QUESTION 8
 #> Use the Data Explorer package to plot boxplots of all of the numeric variables in the dataset
@@ -182,4 +190,15 @@ plot_boxplot(ds2, by = "city")
 #> The function should save the plot as "eda/month_name.png"
 #> The eda folder has an example of what each plot should look like
 #> Call the function in a map or loop to generate graphs for each month
+
+
+
+
+
+
+
+
+
+
+
 
