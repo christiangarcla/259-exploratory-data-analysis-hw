@@ -50,10 +50,11 @@ read_weather <- function(data) {
   return(df)
 }
 
-KCQT <- read_weather("KCQT","KCQT")
+KCQT <- read_weather("KCQT")
 
 glimpse(KCQT)
 
+#attempt2
 #I think I got it??? Ignore below lol
 #df$date <- as.Date(df$date, format = "%Y-%m-%d") this seems to mess up my code
 
@@ -62,6 +63,7 @@ glimpse(KCQT)
 #> Note that because map_dfr() has been superseded, and map() does not automatically bind rows, you will need to do so in the code.
 #> Save the resulting dataset to "ds"
 
+#attempt 1
 ds <- map(stations,read_weather) %>% 
   bind_rows()
 
@@ -70,13 +72,21 @@ ds <- map(stations,read_weather) %>%
 #> (station should be the level and city should be the label)
 #> Use fct_count to check that there are 365 days of data for each city 
 
-ds <- ds %>% mutate(city =factor(station, levels = station, labels = cities))
+ds <- ds %>% mutate(city =factor(station, levels = station, labels = city))
+
+fct_count(ds$city)
 
 # QUESTION 4
 #> Since we're scientists, let's convert all the temperatures to C
 #> Write a function to convert F to C, and then use mutate across to 
 #> convert all of the temperatures, rounded to a tenth of a degree
 
+#attempt 1
+
+fahrenheit <- function(faren) {
+  mutate(celsius = (x - 32) * (5/9)) %>% 
+    rounded()
+}
 
 ### CHECK YOUR WORK
 #> At this point, your data should look like the "compiled_data.csv" file
@@ -144,15 +154,16 @@ ds2 <- ds2 %>% mutate(month = month(date, label = TRUE))
 #> Use a for loop, and print the month along with the resulting correlation
 #> Look at the documentation for the ?cor function if you've never used it before
 
+#attempt1
 ds2 %>% select(city, actual_precipitation:average_precipitation) %>% plot_correlation()
 
 ds2 %>% select(city, actual_min_temp, average_min_temp) %>% plot_correlation()
 
 ds2 %>% select(city, actual_max_temp, average_max_temp) %>% plot_correlation()
 
-cor_output <- vector()
-for (p in preds) {
-  cor_output[p] <- cor(mtcars['mpg'], mtcars[p])
+cor_output <- ds2()
+for ( in ) {
+  cor_output[] <- cor(['month'],)
 }
 cor_output
 
@@ -179,6 +190,14 @@ plot_boxplot(ds2, by = "city")
 #> Use facet_wrap to make a separate plot for each city (3 columns)
 #> Make the points different colors according to month
 
+#attempt 1
+ggplot(ds2, aes(x = date, y = actual_mean_temp, color = month)) + 
+  geom_point() +
+facet_wrap("month", ncol = 3)
+
+#this produces a real cool looking scatter haha
+
+#hmm I think this works? it looks like it was able to produce the 3 columns
 
 
 
@@ -190,15 +209,6 @@ plot_boxplot(ds2, by = "city")
 #> The function should save the plot as "eda/month_name.png"
 #> The eda folder has an example of what each plot should look like
 #> Call the function in a map or loop to generate graphs for each month
-
-
-
-
-
-
-
-
-
 
 
 
